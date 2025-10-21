@@ -183,10 +183,9 @@ print(performance_df)
 #| echo: false
 #| fig-width: 7
 #| fig-height: 5
-#| out.width: 90%
 
 # Create the visualization showing the power of more trees
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 5))
 
 # Plot 1: RMSE vs Number of Trees
 ax1.plot(performance_df['Trees'], performance_df['RMSE_Train'], 'o-', label='Training RMSE', linewidth=2, markersize=6)
@@ -235,7 +234,7 @@ plt.show()
 #| out.width: 90%
 
 # Create the visualization showing the power of more trees
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 5))
 
 # Plot 1: RMSE vs Number of Trees
 ax1.plot(performance_df['Trees'], performance_df['RMSE_Train'], 'o-', label='Training RMSE', linewidth=2, markersize=6)
@@ -304,8 +303,7 @@ Create a side-by-side comparison showing:
 #| echo: false
 #| fig-width: 7
 #| fig-height: 5
-#| #out.width: 90:
-#| out.width: 90%
+
 
 from sklearn.tree import DecisionTreeRegressor
 import matplotlib.pyplot as plt
@@ -326,7 +324,7 @@ for depth in max_depths:
     dt_test_rmse.append(np.sqrt(mean_squared_error(y_test, test_pred)))
 
 # Create side-by-side comparison
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 5))
 
 # Plot 1: Decision Trees - Overfitting
 ax1.plot(max_depths, dt_train_rmse, 'o-', label='Training RMSE', linewidth=2, markersize=6)
@@ -336,7 +334,6 @@ ax1.set_ylabel('RMSE')
 ax1.set_title('Decision Trees: Overfitting with Complexity')
 ax1.grid(True, alpha=0.3)
 ax1.legend()
-ax1.set_ylim(20000, 80000)
 
 # Plot 2: Random Forests - No Overfitting
 ax2.plot(performance_df['Trees'], performance_df['RMSE_Train'], 'o-', label='Training RMSE', linewidth=2, markersize=6)
@@ -347,7 +344,6 @@ ax2.set_title('Random Forests: No Overfitting with More Trees')
 ax2.set_xscale('log')
 ax2.grid(True, alpha=0.3)
 ax2.legend()
-ax2.set_ylim(20000, 80000)
 
 plt.tight_layout()
 plt.show()
