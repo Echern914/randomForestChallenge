@@ -4,7 +4,7 @@ subtitle: "The Power of Weak Learners"
 format:
   html: default
 execute:
-  echo: true
+  echo: false
   eval: true
 ---
 
@@ -49,51 +49,6 @@ We analyze the Ames Housing dataset, which contains detailed information about r
 - **Real-world Complexity:** Captures the kind of messy, real-world data where ensemble methods excel
 
 Since we anticipate non-linear relationships, random forests are well-suited to model the relationship between features and sale price.
-
-::: {.panel-tabset}
-
-### R
-
-```{r}
-#| label: load-and-model-r
-#| echo: true
-#| message: false
-#| warning: false
-
-# Load libraries
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(randomForest))
-
-# Load data
-sales_data <- read.csv("https://raw.githubusercontent.com/flyaflya/buad442Fall2025/refs/heads/main/datasets/salesPriceData.csv")
-
-# Prepare model data
-model_data <- sales_data %>%
-  select(SalePrice, LotArea, YearBuilt, GrLivArea, FullBath, HalfBath, 
-         BedroomAbvGr, TotRmsAbvGrd, GarageCars, zipCode) %>%
-  # Convert zipCode to factor (categorical variable) - important for proper modeling
-  mutate(zipCode = as.factor(zipCode)) %>%
-  na.omit()
-
-cat("Data prepared with zipCode as categorical variable\n")
-cat("Number of unique zip codes:", length(unique(model_data$zipCode)), "\n")
-
-# Split data
-set.seed(123)
-train_indices <- sample(1:nrow(model_data), 0.8 * nrow(model_data))
-train_data <- model_data[train_indices, ]
-test_data <- model_data[-train_indices, ]
-
-# Build random forests with different numbers of trees (with corrected categorical zipCode)
-rf_1 <- randomForest(SalePrice ~ ., data = train_data, ntree = 1, mtry = 3, seed = 123)
-rf_5 <- randomForest(SalePrice ~ ., data = train_data, ntree = 5, mtry = 3, seed = 123)
-rf_25 <- randomForest(SalePrice ~ ., data = train_data, ntree = 25, mtry = 3, seed = 123)
-rf_100 <- randomForest(SalePrice ~ ., data = train_data, ntree = 100, mtry = 3, seed = 123)
-rf_500 <- randomForest(SalePrice ~ ., data = train_data, ntree = 500, mtry = 3, seed = 123)
-rf_1000 <- randomForest(SalePrice ~ ., data = train_data, ntree = 1000, mtry = 3, seed = 123)
-rf_2000 <- randomForest(SalePrice ~ ., data = train_data, ntree = 2000, mtry = 3, seed = 123)
-rf_5000 <- randomForest(SalePrice ~ ., data = train_data, ntree = 5000, mtry = 3, seed = 123)
-```
 
 ### Python
 
@@ -145,88 +100,12 @@ rf_500.fit(X_train, y_train)
 rf_1000.fit(X_train, y_train)
 rf_2000.fit(X_train, y_train)
 rf_5000.fit(X_train, y_train)
-```
-
-:::
 
 ## Results: The Power of Ensemble Learning
 
 Our analysis reveals a clear pattern: **more trees consistently improve performance**. Let's examine the results and understand why this happens.
 
 ### Performance Trends
-
-::: {.panel-tabset}
-
-### R
-
-```{r}
-#| label: performance-comparison-r
-#| echo: true
-#| message: false
-#| warning: false
-#| fig-width: 10
-#| fig-height: 6
-
-# Calculate predictions and performance metrics for test data
-predictions_1_test <- predict(rf_1, test_data)
-predictions_5_test <- predict(rf_5, test_data)
-predictions_25_test <- predict(rf_25, test_data)
-predictions_100_test <- predict(rf_100, test_data)
-predictions_500_test <- predict(rf_500, test_data)
-predictions_1000_test <- predict(rf_1000, test_data)
-predictions_2000_test <- predict(rf_2000, test_data)
-predictions_5000_test <- predict(rf_5000, test_data)
-
-# Calculate predictions for training data
-predictions_1_train <- predict(rf_1, train_data)
-predictions_5_train <- predict(rf_5, train_data)
-predictions_25_train <- predict(rf_25, train_data)
-predictions_100_train <- predict(rf_100, train_data)
-predictions_500_train <- predict(rf_500, train_data)
-predictions_1000_train <- predict(rf_1000, train_data)
-predictions_2000_train <- predict(rf_2000, train_data)
-predictions_5000_train <- predict(rf_5000, train_data)
-
-# Calculate RMSE for test data
-rmse_1_test <- sqrt(mean((test_data$SalePrice - predictions_1_test)^2))
-rmse_5_test <- sqrt(mean((test_data$SalePrice - predictions_5_test)^2))
-rmse_25_test <- sqrt(mean((test_data$SalePrice - predictions_25_test)^2))
-rmse_100_test <- sqrt(mean((test_data$SalePrice - predictions_100_test)^2))
-rmse_500_test <- sqrt(mean((test_data$SalePrice - predictions_500_test)^2))
-rmse_1000_test <- sqrt(mean((test_data$SalePrice - predictions_1000_test)^2))
-rmse_2000_test <- sqrt(mean((test_data$SalePrice - predictions_2000_test)^2))
-rmse_5000_test <- sqrt(mean((test_data$SalePrice - predictions_5000_test)^2))
-
-# Calculate RMSE for training data
-rmse_1_train <- sqrt(mean((train_data$SalePrice - predictions_1_train)^2))
-rmse_5_train <- sqrt(mean((train_data$SalePrice - predictions_5_train)^2))
-rmse_25_train <- sqrt(mean((train_data$SalePrice - predictions_25_train)^2))
-rmse_100_train <- sqrt(mean((train_data$SalePrice - predictions_100_train)^2))
-rmse_500_train <- sqrt(mean((train_data$SalePrice - predictions_500_train)^2))
-rmse_1000_train <- sqrt(mean((train_data$SalePrice - predictions_1000_train)^2))
-rmse_2000_train <- sqrt(mean((train_data$SalePrice - predictions_2000_train)^2))
-rmse_5000_train <- sqrt(mean((train_data$SalePrice - predictions_5000_train)^2))
-
-# Calculate R-squared
-r2_1 <- 1 - sum((test_data$SalePrice - predictions_1_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_5 <- 1 - sum((test_data$SalePrice - predictions_5_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_25 <- 1 - sum((test_data$SalePrice - predictions_25_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_100 <- 1 - sum((test_data$SalePrice - predictions_100_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_500 <- 1 - sum((test_data$SalePrice - predictions_500_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_1000 <- 1 - sum((test_data$SalePrice - predictions_1000_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_2000 <- 1 - sum((test_data$SalePrice - predictions_2000_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-r2_5000 <- 1 - sum((test_data$SalePrice - predictions_5000_test)^2) / sum((test_data$SalePrice - mean(test_data$SalePrice))^2)
-
-# Create performance comparison
-performance_df <- data.frame(
-  Trees = c(1, 5, 25, 100, 500, 1000, 2000, 5000),
-  RMSE_Test = c(rmse_1_test, rmse_5_test, rmse_25_test, rmse_100_test, rmse_500_test, rmse_1000_test, rmse_2000_test, rmse_5000_test),
-  RMSE_Train = c(rmse_1_train, rmse_5_train, rmse_25_train, rmse_100_train, rmse_500_train, rmse_1000_train, rmse_2000_train, rmse_5000_train),
-  R_squared = c(r2_1, r2_5, r2_25, r2_100, r2_500, r2_1000, r2_2000, r2_5000)
-)
-
-print(performance_df)
-```
 
 ### Python
 
@@ -295,9 +174,39 @@ performance_data = {
 
 performance_df = pd.DataFrame(performance_data)
 print(performance_df)
-```
 
-:::
+```{python}
+#| label: power-of-trees-visualization
+#| echo: false
+#| fig-width: 12
+#| fig-height: 6
+
+# Create the visualization showing the power of more trees
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+# Plot 1: RMSE vs Number of Trees
+ax1.plot(performance_df['Trees'], performance_df['RMSE_Train'], 'o-', label='Training RMSE', linewidth=2, markersize=6)
+ax1.plot(performance_df['Trees'], performance_df['RMSE_Test'], 's-', label='Test RMSE', linewidth=2, markersize=6)
+ax1.set_xlabel('Number of Trees')
+ax1.set_ylabel('RMSE')
+ax1.set_title('RMSE vs Number of Trees')
+ax1.set_xscale('log')
+ax1.grid(True, alpha=0.3)
+ax1.legend()
+ax1.set_xlim(0.8, 6000)
+
+# Plot 2: R-squared vs Number of Trees
+ax2.plot(performance_df['Trees'], performance_df['R_squared'], 'o-', color='green', linewidth=2, markersize=6)
+ax2.set_xlabel('Number of Trees')
+ax2.set_ylabel('R-squared')
+ax2.set_title('R-squared vs Number of Trees')
+ax2.set_xscale('log')
+ax2.grid(True, alpha=0.3)
+ax2.set_xlim(0.8, 6000)
+
+plt.tight_layout()
+plt.show()
+```
 
 ## Student Analysis Section: The Power of More Trees {#student-analysis-section}
 
@@ -323,6 +232,8 @@ Create two plots:
 
 Use log scale on x-axis to better show the relationship across the range of tree counts.
 :::
+
+The biggest performance gains occur when moving from 1 to 5 trees, with RMSE dropping significantly and R-squared improving substantially. Beyond 100 trees, improvements become marginal - the curves flatten out showing diminishing returns.
 
 ### 2. Overfitting Visualization and Analysis
 
