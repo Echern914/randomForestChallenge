@@ -517,13 +517,31 @@ The improvement from 1 tree to 100 trees is substantial - similar to switching f
 
 1. **Power of More Trees Analysis:** Provide a clear, well-reasoned analysis of how random forest performance improves with more trees. Your analysis should demonstrate understanding of ensemble learning principles and diminishing returns.
 
+**Analysis:** The graphs show that adding more trees to a random forest dramatically improves performance at first, then levels off. Going from 1 to 5 trees gives huge improvements - this is the magic of ensemble learning where multiple "weak" predictors combine to make a strong one. Each tree sees the data slightly differently, so when you average their predictions, you get much better results.
+
+After about 100 trees, the improvements get smaller and smaller. This is diminishing returns - you're getting less bang for your buck. The forest has already learned most of what it can from the data, so adding more trees doesn't help much but still costs more computing time.
+
+In practice, this means you don't need thousands of trees. Most of the benefit comes from the first 50-100 trees, making random forests surprisingly efficient.
+
 ### Questions to Answer for 85% Grade on Challenge
 
 2. **Overfitting Analysis:** Provide a thorough analysis comparing decision trees vs random forests in terms of overfitting. Your analysis should explain why individual trees overfit while random forests don't, and the mechanisms that prevent overfitting in ensemble methods.
 
+**Analysis:** Decision trees overfit badly - they memorize training data but fail on new data. You can see the gap between training and test performance grow as trees get deeper.
+
+Random forests fix this completely. Even with thousands of trees, both training and test performance improve together. Three things make this work: each tree sees different data (bootstrap sampling), focuses on different features (random selection), and averaging cancels out mistakes.
+
+It's like asking 100 people for directions - even if some are wrong, the average is usually right.
+
 ### Questions to Answer for 95% Grade on Challenge
 
 3. **Linear Regression Comparison:** Your analysis should include a clear comparison table and discussion of when random forests are worth the added complexity vs linear regression. Focus on practical implications for real-world applications.
+
+**Analysis:** The comparison table shows linear regression as the baseline - simple but limited. Random forests consistently beat it, with even 1 tree performing better. The improvement from 1 to 100 trees is huge, similar to switching from linear regression to random forests entirely.
+
+When are random forests worth it? When you need better accuracy and can handle the complexity. Linear regression is great for simple relationships and when you need to explain your model to stakeholders. Random forests excel when data has complex patterns that linear models miss.
+
+The trade-off is clear: simplicity vs. performance. Choose linear regression for interpretability, random forests for accuracy.
 
 ### Questions to Answer for 100% Grade on Challenge
 
