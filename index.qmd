@@ -54,7 +54,7 @@ Since we anticipate non-linear relationships, random forests are well-suited to 
 
 ```{python}
 #| label: load-and-model-python
-#| echo: true
+#| echo: false
 
 import pandas as pd
 import numpy as np
@@ -100,6 +100,7 @@ rf_500.fit(X_train, y_train)
 rf_1000.fit(X_train, y_train)
 rf_2000.fit(X_train, y_train)
 rf_5000.fit(X_train, y_train)
+```
 
 ## Results: The Power of Ensemble Learning
 
@@ -111,7 +112,7 @@ Our analysis reveals a clear pattern: **more trees consistently improve performa
 
 ```{python}
 #| label: performance-comparison-python
-#| echo: true
+#| echo: false
 #| fig-width: 10
 #| fig-height: 6
 
@@ -174,9 +175,10 @@ performance_data = {
 
 performance_df = pd.DataFrame(performance_data)
 print(performance_df)
+```
 
 ```{python}
-#| label: power-of-trees-visualization
+#| label: power-of-trees-visualizationV2
 #| echo: false
 #| fig-width: 12
 #| fig-height: 6
@@ -223,6 +225,41 @@ plt.show()
 - Discuss where the most dramatic improvement in performance occurs as you add more trees, how dramatic is it?
 - Discuss diminishing returns as you add more trees
 
+```{python}
+#| label: power-of_trees-visualizationV1
+#| echo: false
+#| fig-width: 12
+#| fig-height: 6
+
+# Create the visualization showing the power of more trees
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+# Plot 1: RMSE vs Number of Trees
+ax1.plot(performance_df['Trees'], performance_df['RMSE_Train'], 'o-', label='Training RMSE', linewidth=2, markersize=6)
+ax1.plot(performance_df['Trees'], performance_df['RMSE_Test'], 's-', label='Test RMSE', linewidth=2, markersize=6)
+ax1.set_xlabel('Number of Trees')
+ax1.set_ylabel('RMSE')
+ax1.set_title('RMSE vs Number of Trees')
+ax1.set_xscale('log')
+ax1.grid(True, alpha=0.3)
+ax1.legend()
+ax1.set_xlim(0.8, 6000)
+
+# Plot 2: R-squared vs Number of Trees
+ax2.plot(performance_df['Trees'], performance_df['R_squared'], 'o-', color='green', linewidth=2, markersize=6)
+ax2.set_xlabel('Number of Trees')
+ax2.set_ylabel('R-squared')
+ax2.set_title('R-squared vs Number of Trees')
+ax2.set_xscale('log')
+ax2.grid(True, alpha=0.3)
+ax2.set_xlim(0.8, 6000)
+
+plt.tight_layout()
+plt.show()
+```
+
+The biggest performance gains occur when moving from 1 to 5 trees, with RMSE dropping significantly and R-squared improving substantially. Beyond 100 trees, improvements become marginal - the curves flatten out showing diminishing returns.
+
 ::: {.callout-important}
 ## 📊 Visualization Requirements
 
@@ -259,6 +296,60 @@ Create a side-by-side comparison showing:
 - Do not `echo` the code that creates the visualization
 :::
 
+```{python}
+#| label: overfitting-comparison
+#| echo: false
+#| fig-width: 14
+#| fig-height: 6
+
+from sklearn.tree import DecisionTreeRegressor
+import matplotlib.pyplot as plt
+
+# Create decision trees with different max depths
+max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20]
+dt_train_rmse = []
+dt_test_rmse = []
+
+for depth in max_depths:
+    dt = DecisionTreeRegressor(max_depth=depth, random_state=123)
+    dt.fit(X_train, y_train)
+    
+    train_pred = dt.predict(X_train)
+    test_pred = dt.predict(X_test)
+    
+    dt_train_rmse.append(np.sqrt(mean_squared_error(y_train, train_pred)))
+    dt_test_rmse.append(np.sqrt(mean_squared_error(y_test, test_pred)))
+
+# Create side-by-side comparison
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# Plot 1: Decision Trees - Overfitting
+ax1.plot(max_depths, dt_train_rmse, 'o-', label='Training RMSE', linewidth=2, markersize=6)
+ax1.plot(max_depths, dt_test_rmse, 's-', label='Test RMSE', linewidth=2, markersize=6)
+ax1.set_xlabel('Max Depth')
+ax1.set_ylabel('RMSE')
+ax1.set_title('Decision Trees: Overfitting with Complexity')
+ax1.grid(True, alpha=0.3)
+ax1.legend()
+ax1.set_ylim(20000, 80000)
+
+# Plot 2: Random Forests - No Overfitting
+ax2.plot(performance_df['Trees'], performance_df['RMSE_Train'], 'o-', label='Training RMSE', linewidth=2, markersize=6)
+ax2.plot(performance_df['Trees'], performance_df['RMSE_Test'], 's-', label='Test RMSE', linewidth=2, markersize=6)
+ax2.set_xlabel('Number of Trees')
+ax2.set_ylabel('RMSE')
+ax2.set_title('Random Forests: No Overfitting with More Trees')
+ax2.set_xscale('log')
+ax2.grid(True, alpha=0.3)
+ax2.legend()
+ax2.set_ylim(20000, 80000)
+
+plt.tight_layout()
+plt.show()
+```
+
+Decision trees show clear overfitting - training RMSE drops dramatically while test RMSE increases after depth 4, creating a growing gap. Random forests avoid this problem entirely - both training and test RMSE improve together as more trees are added, with no performance gap emerging.
+
 ### 3. Linear Regression vs Random Forest Comparison
 
 **Your Task:** Compare random forests to linear regression baseline.
@@ -287,6 +378,45 @@ Create a clear table comparing:
 
 Include percentage improvements over linear regression for each random forest model.
 :::
+
+```{python}
+#| label: linear-regression-comparison
+#| echo: false
+
+from sklearn.linear_model import LinearRegression
+
+# Fit linear regression model
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+
+# Get predictions
+lr_train_pred = lr.predict(X_train)
+lr_test_pred = lr.predict(X_test)
+
+# Calculate RMSE
+lr_train_rmse = np.sqrt(mean_squared_error(y_train, lr_train_pred))
+lr_test_rmse = np.sqrt(mean_squared_error(y_test, lr_test_pred))
+
+# Get RMSE values for random forests (from our previous analysis)
+rf_1_test_rmse = rmse_1_test
+rf_100_test_rmse = rmse_100_test
+rf_1000_test_rmse = rmse_1000_test
+
+# Create comparison table
+comparison_data = {
+    'Model': ['Linear Regression', 'Random Forest (1 tree)', 'Random Forest (100 trees)', 'Random Forest (1000 trees)'],
+    'Test RMSE': [lr_test_rmse, rf_1_test_rmse, rf_100_test_rmse, rf_1000_test_rmse],
+    'Improvement over Linear Regression': ['-', 
+                                         f'{((lr_test_rmse - rf_1_test_rmse) / lr_test_rmse * 100):.1f}%',
+                                         f'{((lr_test_rmse - rf_100_test_rmse) / lr_test_rmse * 100):.1f}%',
+                                         f'{((lr_test_rmse - rf_1000_test_rmse) / lr_test_rmse * 100):.1f}%']
+}
+
+comparison_df = pd.DataFrame(comparison_data)
+print(comparison_df.to_string(index=False))
+```
+
+The improvement from 1 tree to 100 trees is substantial - similar to switching from linear regression to a 100-tree random forest. Random forests are worth the complexity when you need better performance and can sacrifice interpretability. The trade-off is clear: linear regression is simple and interpretable but limited, while random forests capture complex patterns at the cost of interpretability.
 
 ## Challenge Requirements 📋
 
