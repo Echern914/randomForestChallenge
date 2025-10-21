@@ -115,6 +115,7 @@ Our analysis reveals a clear pattern: **more trees consistently improve performa
 #| echo: false
 #| fig-width: 7
 #| fig-height: 5
+#| out.width: 90%
 
 # Calculate predictions for test data
 predictions_1_test = rf_1.predict(X_test)
@@ -182,6 +183,7 @@ print(performance_df)
 #| echo: false
 #| fig-width: 7
 #| fig-height: 5
+#| out.width: 90%
 
 # Create the visualization showing the power of more trees
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
@@ -230,6 +232,7 @@ plt.show()
 #| echo: false
 #| fig-width: 7
 #| fig-height: 5
+#| out.width: 90%
 
 # Create the visualization showing the power of more trees
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
@@ -301,6 +304,8 @@ Create a side-by-side comparison showing:
 #| echo: false
 #| fig-width: 7
 #| fig-height: 5
+#| #out.width: 90:
+#| out.width: 90%
 
 from sklearn.tree import DecisionTreeRegressor
 import matplotlib.pyplot as plt
