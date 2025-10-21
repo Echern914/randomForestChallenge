@@ -340,7 +340,7 @@ ax2.plot(performance_df['Trees'], performance_df['RMSE_Train'], 'o-', label='Tra
 ax2.plot(performance_df['Trees'], performance_df['RMSE_Test'], 's-', label='Test RMSE', linewidth=2, markersize=6)
 ax2.set_xlabel('Number of Trees')
 ax2.set_ylabel('RMSE')
-ax2.set_title('Random Forests: No Overfitting with More Trees')
+ax2.set_title('No Overfitting with More Trees')
 ax2.set_xscale('log')
 ax2.grid(True, alpha=0.3)
 ax2.legend()
